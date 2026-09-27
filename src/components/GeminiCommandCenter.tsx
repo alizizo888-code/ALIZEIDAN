@@ -10,12 +10,7 @@ interface GeminiCommandCenterProps {
   onNavigate: (target: 'customer' | 'technician' | 'operations' | 'sovereign' | 'register' | 'landing') => void;
 }
 
-export const GeminiCommandCenter: React.FC<GeminiCommandCenterProps> = ({
-  orders,
-  techs,
-  onCreateOrder,
-  onNavigate,
-}) => {
+export const GeminiCommandCenter: React.FC<GeminiCommandCenterProps> = ({ orders, techs, onCreateOrder, onNavigate }) => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [answer, setAnswer] = useState('');
@@ -28,7 +23,11 @@ export const GeminiCommandCenter: React.FC<GeminiCommandCenterProps> = ({
     try {
       const result = await runGeminiOrderAgent(message.trim(), orders, techs);
       if (result.action === 'create_order') {
+        const total = result.totalCost || 0;
         onCreateOrder({
+          id: `ai-${Date.now()}`,
+          orderNo: `#AI-${Date.now().toString().slice(-6)}`,
+          customerId: 'ai-customer',
           customerName: result.customerName || 'عميل جديد',
           customerPhone: result.customerPhone || '',
           serviceCategory: result.category,
@@ -36,16 +35,19 @@ export const GeminiCommandCenter: React.FC<GeminiCommandCenterProps> = ({
           description: result.description,
           city: result.city,
           district: result.district,
-          status: 'pending',
-          totalCost: result.totalCost || 0,
+          nationalAddress: '',
+          status: 'bidding',
+          safeOtp: '',
+          totalCost: total,
           platformCutPercentage: 18.5,
-          platformCutAmount: result.totalCost ? result.totalCost * 0.185 : 0,
-          technicianCutAmount: result.totalCost ? result.totalCost * 0.815 : 0,
+          platformCutAmount: total * 0.185,
+          technicianCutAmount: total * 0.815,
           escrowStatus: 'held',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         });
         setAnswer('تم تحويل كلامك إلى طلب خدمة فعلي وتسجيله في النظام.');
+        setMessage('');
       } else if (result.action === 'navigate') {
         onNavigate(result.target);
         setAnswer('تم فتح القسم المطلوب.');
@@ -64,35 +66,18 @@ export const GeminiCommandCenter: React.FC<GeminiCommandCenterProps> = ({
       {open && (
         <div className="mb-3 w-[min(92vw,390px)] overflow-hidden rounded-3xl border border-[#bccac0]/30 bg-white shadow-2xl">
           <div className="flex items-center justify-between bg-[#0b1c30] px-4 py-3 text-white">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-[#85f8c4]" />
-              <div>
-                <div className="text-sm font-black">مساعد مُتقِن الذكي</div>
-                <div className="text-[10px] text-white/70">Gemini • أوامر وتشغيل</div>
-              </div>
-            </div>
+            <div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-[#85f8c4]" /><div><div className="text-sm font-black">مساعد مُتقِن الذكي</div><div className="text-[10px] text-white/70">Gemini • أوامر وتشغيل</div></div></div>
             <button onClick={() => setOpen(false)} className="rounded-lg p-1 hover:bg-white/10"><X className="h-4 w-4" /></button>
           </div>
           <div className="space-y-3 p-4">
             <p className="text-xs leading-6 text-[#565e74]">اكتب مثلاً: «عايز فني تكييف في الرياض لإصلاح المكيف» أو «افتح غرفة العمليات».</p>
             {answer && <div className="rounded-2xl bg-[#eff4ff] p-3 text-xs font-bold leading-6 text-[#0b1c30]">{answer}</div>}
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void submit(); } }}
-              placeholder="اكتب الأمر هنا..."
-              className="min-h-24 w-full resize-none rounded-2xl border border-[#d8dfdb] p-3 text-sm outline-none focus:border-[#006948]"
-            />
-            <button onClick={() => void submit()} disabled={busy || !message.trim()} className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-[#006948] text-sm font-black text-white disabled:opacity-50">
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              {busy ? 'جاري التنفيذ...' : 'نفّذ الأمر'}
-            </button>
+            <textarea value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void submit(); } }} placeholder="اكتب الأمر هنا..." className="min-h-24 w-full resize-none rounded-2xl border border-[#d8dfdb] p-3 text-sm outline-none focus:border-[#006948]" />
+            <button onClick={() => void submit()} disabled={busy || !message.trim()} className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-[#006948] text-sm font-black text-white disabled:opacity-50">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}{busy ? 'جاري التنفيذ...' : 'نفّذ الأمر'}</button>
           </div>
         </div>
       )}
-      <button onClick={() => setOpen((v) => !v)} className="flex h-14 w-14 items-center justify-center rounded-full bg-[#006948] text-white shadow-xl ring-4 ring-white">
-        <Bot className="h-6 w-6" />
-      </button>
+      <button onClick={() => setOpen((v) => !v)} className="flex h-14 w-14 items-center justify-center rounded-full bg-[#006948] text-white shadow-xl ring-4 ring-white"><Bot className="h-6 w-6" /></button>
     </div>
   );
 };
