@@ -6,11 +6,23 @@ export type UserRole = 'customer' | 'technician' | 'dispatcher' | 'site_supervis
 export type SupervisedPage = 'landing' | 'customer' | 'technician' | 'operations';
 export type AppModule = 'landing' | 'register' | 'customer' | 'technician' | 'operations' | 'supervisor_landing' | 'supervisor_customer' | 'supervisor_technician' | 'supervisor_operations' | 'site_supervisor' | 'sovereign' | 'admin_cms';
 
+export interface PageSupervisorOffer {
+  id: string;
+  title: string;
+  price?: number;
+  originalPrice?: number;
+  discount?: string;
+  imageUrl?: string;
+  description?: string;
+  service?: string;
+  active: boolean;
+}
+
 export interface PageSupervisorConfig {
   page: SupervisedPage; enabled: boolean; pageTitle: string; pageSubtitle: string; heroTitle: string; heroText: string; heroImageUrl: string;
   primaryColor: string; accentColor: string; showHero: boolean; showServices: boolean; showPricing: boolean; showOffers: boolean; showGraphics: boolean;
   showAnnouncements: boolean; showQuickActions: boolean; visibleButtons: string[]; servicePrices: Record<string, number>;
-  offers: { id: string; title: string; price?: number; discount?: string; imageUrl?: string; active: boolean }[]; customLabels: Record<string, string>;
+  offers: PageSupervisorOffer[]; customLabels: Record<string, string>;
 }
 
 export interface SiteCustomization {
