@@ -1,0 +1,6 @@
+{
+  "name": "مُتقن للصيانة - أكسجين للمقاولات",
+  "description": "المنظومة الذكية للتشغيل والصيانة الميدانية في المملكة العربية السعودية - مبادرة مؤسسة أكسجين للصيانة والمقاولات العامة بإشراف م. علي طلعت زيدان",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
