@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مُتقن | الرئيسية</title>
+<style>
+:root{--primary:#0b63f6;--accent:#12b886;--bg:#f5f7fb;--text:#172033;--card:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+a{text-decoration:none;color:inherit}.top{background:#fff;border-bottom:1px solid #e8ebf2;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+.logo{font-size:24px;font-weight:900;color:var(--primary)}nav{display:flex;gap:18px;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:11px 18px;background:var(--primary);color:#fff;font-weight:800;cursor:pointer}.btn.alt{background:#eaf2ff;color:var(--primary)}
+.hero{padding:70px 5%;background:linear-gradient(135deg,#eef5ff,#fff);display:grid;grid-template-columns:1.2fr .8fr;gap:35px;align-items:center}.hero h1{font-size:48px;line-height:1.15;margin:0 0 18px}.hero p{font-size:19px;line-height:1.9;color:#5e687b}.hero img{width:100%;height:300px;object-fit:cover;border-radius:28px;box-shadow:0 18px 45px #17345d20}
+section{padding:48px 5%}.section-title{font-size:30px;margin:0 0 25px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:var(--card);border:1px solid #e8ebf2;border-radius:18px;padding:22px;box-shadow:0 8px 25px #17345d0b}.price{font-size:25px;font-weight:900;color:var(--primary);margin:12px 0}.badge{display:inline-block;background:#e8fff6;color:#087f5b;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}.offer img{width:100%;height:150px;object-fit:cover;border-radius:14px}.empty{padding:35px;text-align:center;background:#fff;border:1px dashed #ccd3df;border-radius:16px;color:#687386}
+footer{padding:35px 5%;background:#121827;color:#dce4f2}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.hero h1{font-size:36px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">مُتقن</div>
+  <nav>
+    <a href="#services">الخدمات</a><a href="#offers">العروض</a><a href="#contact">تواصل معنا</a>
+    <a class="btn" href="customer.html">طلب خدمة</a>
+    <a class="btn alt" href="supervisor-home.html">دخول المشرف</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero" id="hero">
+  <div><span class="badge">خدمات صيانة وتشغيل ميداني</span><h1 id="heroTitle">خدماتك الفنية تحت إدارة مُتقن</h1><p id="heroText">اطلب الخدمة، تابع الطلب، واعرف حالة التنفيذ من منصة واحدة.</p>
+  <a class="btn" href="customer.html" id="heroButton">ابدأ طلبك الآن</a></div>
+  <img id="heroImage" src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80" alt="خدمات صيانة">
+</section>
+
+<section id="services"><h2 class="section-title">خدماتنا</h2><div class="grid" id="serviceGrid"></div></section>
+<section id="offers"><h2 class="section-title">العروض الحالية</h2><div class="grid" id="offerGrid"></div></section>
+<section id="contact"><h2 class="section-title">ابدأ الآن</h2><div class="card"><p>يمكنك الانتقال إلى صفحة العميل لإنشاء طلب صيانة جديد.</p><a class="btn" href="customer.html">فتح صفحة العميل</a></div></section>
+</main>
+<footer>مُتقن — نظام موحد لإدارة وتشغيل خدمات الصيانة الميدانية</footer>
+
+<script>
+const KEY='mutqan_home_config_v1';
+const defaults={
+ primary:'#0b63f6',accent:'#12b886',
+ heroTitle:'خدماتك الفنية تحت إدارة مُتقن',
+ heroText:'اطلب الخدمة، تابع الطلب، واعرف حالة التنفيذ من منصة واحدة.',
+ heroImage:'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80',
+ services:[
+  ['صيانة مكيفات وتبريد','180 ريال'],['تركيب مكيفات جديدة','220 ريال'],['غسيل وتنظيف مكيفات','120 ريال'],
+  ['صيانة ثلاجات وتبريد','160 ريال'],['سباكة وشبكات مياه','150 ريال'],['كهرباء وأنظمة ذكية','170 ريال']
+ ],
+ offers:[
+  ['باقة تنظيف وغسيل 3 مكيفات سبليت','235 ريال','خصم 35%'],
+  ['فحص كشف تسربات المياه بالموجات فوق الصوتية','150 ريال','خصم 25%'],
+  ['عقد الصيانة الوقائية السنوي','720 ريال','خصم 40%']
+ ]
+};
+function load(){try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return defaults}}
+function render(){
+ const c=load(); document.documentElement.style.setProperty('--primary',c.primary);document.documentElement.style.setProperty('--accent',c.accent);
+ heroTitle.textContent=c.heroTitle;heroText.textContent=c.heroText;heroImage.src=c.heroImage;
+ serviceGrid.innerHTML=c.services.map(x=>`<article class="card"><h3>${esc(x[0])}</h3><div class="price">${esc(x[1])}</div><a class="btn" href="customer.html">اطلب الخدمة</a></article>`).join('');
+ offerGrid.innerHTML=c.offers.map(x=>`<article class="card offer"><span class="badge">${esc(x[2])}</span><h3>${esc(x[0])}</h3><div class="price">${esc(x[1])}</div><a class="btn" href="customer.html">استفد من العرض</a></article>`).join('');
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+window.addEventListener('storage',e=>{if(e.key===KEY)render()});render();
+</script>
+</body>
+</html>
