@@ -3,7 +3,7 @@ import { useAppStore } from './store/useAppStore';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { GeminiCommandCenter } from './components/GeminiCommandCenter';
-import { LandingView } from './components/modules/LandingView';
+import { ManagedLandingView } from './components/modules/ManagedLandingView';
 import { RegistrationView } from './components/modules/RegistrationView';
 import { CustomerPortalView } from './components/modules/CustomerPortalView';
 import { TechnicianPortalView } from './components/modules/TechnicianPortalView';
@@ -36,7 +36,7 @@ export default function App() {
     <Header activeModule={store.activeModule} setActiveModule={store.setActiveModule} switches={store.switches} onOpenZatcaModal={() => setIsZatcaModalOpen(true)} />
     <Sidebar activeModule={store.activeModule} setActiveModule={store.setActiveModule} onOpenZatcaModal={() => setIsZatcaModalOpen(true)} onOpenSqlModal={() => setSqlModalMode('sql')} onOpenWorkflowModal={() => setSqlModalMode('workflow')} />
     <div className="w-full pr-0 lg:pr-64 pt-20 transition-all duration-200"><main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 min-h-[calc(100vh-80px)]">
-      {store.activeModule === 'landing' && <LandingView onSelectService={handleSelectService} onNavigateToCustomer={handleNavigateToCustomer} onNavigateToTechnician={() => go('technician')} onNavigateToOperations={() => go('operations')} onNavigateToSovereign={() => go('sovereign')} onNavigateToRegister={handleNavigateToRegister} switches={store.switches} />}
+      {store.activeModule === 'landing' && <ManagedLandingView customization={store.siteCustomization.pageSupervisors?.landing} onSelectService={handleSelectService} onNavigateToCustomer={handleNavigateToCustomer} onNavigateToTechnician={() => go('technician')} onNavigateToOperations={() => go('operations')} onNavigateToSovereign={() => go('sovereign')} onNavigateToRegister={handleNavigateToRegister} switches={store.switches} />}
       {store.activeModule === 'register' && <RegistrationView initialService={initialRegisterService} initialType={initialRegisterType} onBackToHome={handleBackToHome} onOrderCreated={handleOrderCreated} onNavigateToTechnician={() => go('technician')} switches={store.switches} />}
       {store.activeModule === 'customer' && <CustomerPortalView orders={store.orders} customerWallet={store.customerWallet} loyaltyPoints={store.loyaltyPoints} switches={store.switches} onAddOrder={store.addNewOrder} onOpenZatcaModal={() => setIsZatcaModalOpen(true)} initialSpecialty={initialCustomerSpecialty} onBackToHome={handleBackToHome} onNavigateToRegister={(srv) => handleNavigateToRegister(srv, 'customer')} />}
       {store.activeModule === 'technician' && <TechnicianPortalView orders={store.orders} techs={store.techs} techWallet={store.techWallet} techCashHand={store.techCashHand} switches={store.switches} onVerifySafeOtp={store.verifySafeOtp} onCompleteOrder={store.completeOrder} onAddOrder={store.addNewOrder} onBackToHome={handleBackToHome} />}
