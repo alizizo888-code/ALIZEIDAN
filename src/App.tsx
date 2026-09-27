@@ -8,13 +8,13 @@ import { RegistrationView } from './components/modules/RegistrationView';
 import { CustomerPortalView } from './components/modules/CustomerPortalView';
 import { TechnicianPortalView } from './components/modules/TechnicianPortalView';
 import { OperationsHubView } from './components/modules/OperationsHubView';
-import { SiteSupervisorView } from './components/modules/SiteSupervisorView';
 import { SovereignConsoleView } from './components/modules/SovereignConsoleView';
 import { AdminCmsView } from './components/modules/AdminCmsView';
+import { PageSupervisorView } from './components/modules/PageSupervisorView';
 import { ZatcaInvoiceModal } from './components/modals/ZatcaInvoiceModal';
 import { ThreeWayCallModal } from './components/modals/ThreeWayCallModal';
 import { SqlSchemaModal } from './components/modals/SqlSchemaModal';
-import { RegistrationType, WorkOrder } from './types';
+import { RegistrationType, WorkOrder, SupervisedPage } from './types';
 
 export default function App() {
   const store = useAppStore();
@@ -30,6 +30,8 @@ export default function App() {
   const handleNavigateToRegister = (serviceTitle?: string, type: RegistrationType = 'guest') => { if (serviceTitle) setInitialRegisterService(serviceTitle); setInitialRegisterType(type); go('register'); };
   const handleOrderCreated = (order: Partial<WorkOrder>) => { store.addNewOrder(order); go('customer'); };
   const handleBackToHome = () => go('landing');
+  const supervisorPage = (module: string): SupervisedPage => ({ supervisor_landing: 'landing', supervisor_customer: 'customer', supervisor_technician: 'technician', supervisor_operations: 'operations' } as Record<string, SupervisedPage>)[module];
+
   return <div className="min-h-screen bg-[#f8f9ff] text-[#0b1c30] flex flex-col font-sans" dir="rtl">
     <Header activeModule={store.activeModule} setActiveModule={store.setActiveModule} switches={store.switches} onOpenZatcaModal={() => setIsZatcaModalOpen(true)} />
     <Sidebar activeModule={store.activeModule} setActiveModule={store.setActiveModule} onOpenZatcaModal={() => setIsZatcaModalOpen(true)} onOpenSqlModal={() => setSqlModalMode('sql')} onOpenWorkflowModal={() => setSqlModalMode('workflow')} />
@@ -39,9 +41,9 @@ export default function App() {
       {store.activeModule === 'customer' && <CustomerPortalView orders={store.orders} customerWallet={store.customerWallet} loyaltyPoints={store.loyaltyPoints} switches={store.switches} onAddOrder={store.addNewOrder} onOpenZatcaModal={() => setIsZatcaModalOpen(true)} initialSpecialty={initialCustomerSpecialty} onBackToHome={handleBackToHome} onNavigateToRegister={(srv) => handleNavigateToRegister(srv, 'customer')} />}
       {store.activeModule === 'technician' && <TechnicianPortalView orders={store.orders} techs={store.techs} techWallet={store.techWallet} techCashHand={store.techCashHand} switches={store.switches} onVerifySafeOtp={store.verifySafeOtp} onCompleteOrder={store.completeOrder} onAddOrder={store.addNewOrder} onBackToHome={handleBackToHome} />}
       {store.activeModule === 'operations' && <OperationsHubView orders={store.orders} techs={store.techs} onResolveDispute={store.resolveDispute} onOpenZatcaModal={() => setIsZatcaModalOpen(true)} onBackToHome={handleBackToHome} />}
-      {store.activeModule === 'site_supervisor' && <SiteSupervisorView orders={store.orders} techs={store.techs} onBackToHome={handleBackToHome} />}
       {store.activeModule === 'sovereign' && <SovereignConsoleView switches={store.switches} toggleSwitch={store.toggleSwitch} platformCommission={store.platformCommission} adjustCommission={store.adjustCommission} orders={store.orders} techs={store.techs} timeLocks={store.timeLocks} chatMessages={store.chatMessages} onAddChatMessage={store.addChatMessage} onApproveTimeLock={store.approveTimeLock} onResolveDispute={store.resolveDispute} onOpenThreeWayCall={() => setIsThreeWayCallOpen(true)} onOpenZatcaModal={() => setIsZatcaModalOpen(true)} onBackToHome={handleBackToHome} />}
       {store.activeModule === 'admin_cms' && <AdminCmsView onBackToHome={handleBackToHome} customization={store.siteCustomization} onUpdateCustomization={store.updateCustomization} />}
+      {['supervisor_landing','supervisor_customer','supervisor_technician','supervisor_operations'].includes(store.activeModule) && <PageSupervisorView page={supervisorPage(store.activeModule)} customization={store.siteCustomization} onUpdateCustomization={store.updateCustomization} onBackToHome={handleBackToHome} />}
     </main></div>
     <GeminiCommandCenter orders={store.orders} techs={store.techs} onCreateOrder={handleOrderCreated} onNavigate={(target) => go(target)} />
     <ZatcaInvoiceModal isOpen={isZatcaModalOpen} onClose={() => setIsZatcaModalOpen(false)} order={store.orders[0]} />
