@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مُتقن | مشرف الرئيسية</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:#172033;font-family:Tahoma,Arial,sans-serif}.top{background:#121827;color:#fff;padding:16px 4%;display:flex;justify-content:space-between;align-items:center}.brand{font-size:23px;font-weight:900}.wrap{max-width:1200px;margin:auto;padding:28px 4%}.layout{display:grid;grid-template-columns:260px 1fr;gap:20px}.side,.panel{background:#fff;border:1px solid #e5e9f0;border-radius:18px}.side{padding:15px;height:max-content}.side button{width:100%;text-align:right;border:0;background:transparent;padding:13px;border-radius:10px;cursor:pointer;font-weight:700}.side button.active,.side button:hover{background:#eaf2ff;color:#0b63f6}.panel{padding:25px}.tab{display:none}.tab.active{display:block}.row{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field{margin-bottom:15px}.field label{display:block;font-weight:800;margin-bottom:7px}.field input,.field textarea{width:100%;padding:12px;border:1px solid #d8dee8;border-radius:10px;font:inherit}.field textarea{min-height:110px}.btn{border:0;background:#0b63f6;color:#fff;border-radius:10px;padding:11px 18px;font-weight:800;cursor:pointer}.danger{background:#d9485f}.success{background:#12b886}.list{display:grid;gap:10px}.item{border:1px solid #e4e8ef;border-radius:12px;padding:13px;display:flex;gap:10px;align-items:center}.item input{flex:1;padding:9px;border:1px solid #d8dee8;border-radius:8px}.notice{padding:12px;background:#e8fff6;color:#087f5b;border-radius:10px;margin-bottom:15px;display:none}.code{width:100%;min-height:280px;background:#10151f;color:#d9e2f1;border:0;border-radius:12px;padding:16px;font-family:Consolas,monospace;direction:ltr;text-align:left}.muted{color:#687386;font-size:13px}@media(max-width:850px){.layout{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">مُتقن — مشرف الرئيسية</div><a href="index.html" style="color:#fff">معاينة الرئيسية ↗</a></header>
+<div class="wrap">
+<div id="notice" class="notice">تم حفظ التعديلات. افتح الرئيسية لمشاهدة النتيجة.</div>
+<div class="layout">
+<aside class="side">
+<button class="active" data-tab="appearance">المظهر والواجهة</button>
+<button data-tab="services">الخدمات والأسعار</button>
+<button data-tab="offers">العروض</button>
+<button data-tab="code">الكود</button>
+<button data-tab="data">بيانات التعديل</button>
+</aside>
+<section class="panel">
+<div id="appearance" class="tab active">
+<h2>المظهر والواجهة</h2>
+<div class="row">
+<div class="field"><label>عنوان الواجهة</label><input id="heroTitle"></div>
+<div class="field"><label>رابط صورة الواجهة</label><input id="heroImage"></div>
+</div>
+<div class="field"><label>النص التعريفي</label><textarea id="heroText"></textarea></div>
+<div class="row">
+<div class="field"><label>اللون الأساسي</label><input id="primary" type="color"></div>
+<div class="field"><label>لون مساعد</label><input id="accent" type="color"></div>
+</div>
+<button class="btn" onclick="save()">حفظ ونشر التعديلات</button>
+</div>
+
+<div id="services" class="tab">
+<h2>الخدمات والأسعار</h2><p class="muted">إضافة أو تعديل أو حذف الخدمات التي تظهر في الرئيسية.</p>
+<div id="servicesList" class="list"></div><br><button class="btn success" onclick="addService()">+ إضافة خدمة</button>
+<button class="btn" onclick="save()">حفظ</button>
+</div>
+
+<div id="offers" class="tab">
+<h2>العروض</h2><div id="offersList" class="list"></div><br><button class="btn success" onclick="addOffer()">+ إضافة عرض</button>
+<button class="btn" onclick="save()">حفظ</button>
+</div>
+
+<div id="code" class="tab">
+<h2>محرر الكود الخاص بالواجهة</h2>
+<p class="muted">هذه منطقة إعداد للكود الإضافي للواجهة. عند دمجها في إضافة MUTQAN سيتم تمريرها عبر طبقة الصلاحيات قبل النشر.</p>
+<textarea id="customCode" class="code" spellcheck="false"></textarea><br><br>
+<button class="btn" onclick="save()">حفظ الكود</button>
+</div>
+
+<div id="data" class="tab">
+<h2>مركز التعديل السريع</h2>
+<p>التغييرات محفوظة في قناة بيانات مشتركة باسم <b>mutqan_home_config_v1</b>. هذه النسخة التجريبية تسمح للصفحة الرئيسية بقراءة التحديثات فورًا من نفس المتصفح.</p>
+<p class="muted">عند تحويلها إلى WordPress، يتم استبدال قناة localStorage ببيانات إضافة MUTQAN/REST API مع صلاحيات المشرف.</p>
+<button class="btn danger" onclick="resetConfig()">إرجاع الإعدادات الافتراضية</button>
+</div>
+</section>
+</div></div>
+
+<script>
+const KEY='mutqan_home_config_v1';
+const defaults={primary:'#0b63f6',accent:'#12b886',heroTitle:'خدماتك الفنية تحت إدارة مُتقن',heroText:'اطلب الخدمة، تابع الطلب، واعرف حالة التنفيذ من منصة واحدة.',heroImage:'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80',services:[['صيانة مكيفات وتبريد','180 ريال'],['تركيب مكيفات جديدة','220 ريال'],['غسيل وتنظيف مكيفات','120 ريال'],['صيانة ثلاجات وتبريد','160 ريال'],['سباكة وشبكات مياه','150 ريال'],['كهرباء وأنظمة ذكية','170 ريال']],offers:[['باقة تنظيف وغسيل 3 مكيفات سبليت','235 ريال','خصم 35%'],['فحص كشف تسربات المياه بالموجات فوق الصوتية','150 ريال','خصم 25%'],['عقد الصيانة الوقائية السنوي','720 ريال','خصم 40%']],customCode:''};
+let config=load();
+function load(){try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return JSON.parse(JSON.stringify(defaults))}}
+function bind(){
+heroTitle.value=config.heroTitle;heroText.value=config.heroText;heroImage.value=config.heroImage;primary.value=config.primary;accent.value=config.accent;customCode.value=config.customCode||'';renderServices();renderOffers();
+}
+function renderServices(){servicesList.innerHTML=config.services.map((x,i)=>`<div class="item"><input data-s="${i}" value="${safe(x[0])}"><input data-p="${i}" value="${safe(x[1])}"><button class="btn danger" onclick="removeService(${i})">حذف</button></div>`).join('')}
+function renderOffers(){offersList.innerHTML=config.offers.map((x,i)=>`<div class="item"><input data-o-title="${i}" value="${safe(x[0])}"><input data-o-price="${i}" value="${safe(x[1])}"><input data-o-discount="${i}" value="${safe(x[2])}"><button class="btn danger" onclick="removeOffer(${i})">حذف</button></div>`).join('')}
+function syncLists(){config.services=[...document.querySelectorAll('[data-s]')].reduce((a,e)=>{let i=+e.dataset.s;a[i]??=[];a[i][0]=e.value;return a},config.services);document.querySelectorAll('[data-p]').forEach(e=>config.services[+e.dataset.p][1]=e.value);document.querySelectorAll('[data-o-title]').forEach(e=>config.offers[+e.dataset.oTitle][0]=e.value);document.querySelectorAll('[data-o-price]').forEach(e=>config.offers[+e.dataset.oPrice][1]=e.value);document.querySelectorAll('[data-o-discount]').forEach(e=>config.offers[+e.dataset.oDiscount][2]=e.value)}
+function save(){syncLists();config.heroTitle=heroTitle.value;config.heroText=heroText.value;config.heroImage=heroImage.value;config.primary=primary.value;config.accent=accent.value;config.customCode=customCode.value;localStorage.setItem(KEY,JSON.stringify(config));notice.style.display='block';setTimeout(()=>notice.style.display='none',2500)}
+function addService(){config.services.push(['خدمة جديدة','السعر عند الطلب']);renderServices()}
+function removeService(i){config.services.splice(i,1);renderServices()}
+function addOffer(){config.offers.push(['عرض جديد','0 ريال','خصم 0%']);renderOffers()}
+function removeOffer(i){config.offers.splice(i,1);renderOffers()}
+function resetConfig(){if(confirm('إرجاع إعدادات الرئيسية الافتراضية؟')){localStorage.removeItem(KEY);config=load();bind();save()}}
+function safe(v){return String(v??'').replace(/"/g,'&quot;')}
+document.querySelectorAll('.side button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.side button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')});
+bind();
+</script>
+</body>
+</html>
