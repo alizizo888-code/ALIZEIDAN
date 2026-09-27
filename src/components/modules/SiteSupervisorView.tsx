@@ -1,0 +1,27 @@
+import React, { useMemo, useState } from 'react';
+import { AlertTriangle, CheckCircle2, ClipboardCheck, Clock3, Filter, MapPin, ShieldCheck, Users } from 'lucide-react';
+import { TechnicianTelemetry, WorkOrder } from '../../types';
+
+interface SiteSupervisorViewProps { orders: WorkOrder[]; techs: TechnicianTelemetry[]; onBackToHome?: () => void; }
+
+export const SiteSupervisorView: React.FC<SiteSupervisorViewProps> = ({ orders, techs, onBackToHome }) => {
+  const [city, setCity] = useState<'all' | 'الرياض' | 'جدة' | 'مكة المكرمة'>('all');
+  const visibleOrders = useMemo(() => orders.filter(o => city === 'all' || o.city === city), [orders, city]);
+  const active = visibleOrders.filter(o => ['bidding','dispatched','in_progress','pending'].includes(o.status));
+  const completed = visibleOrders.filter(o => o.status === 'completed');
+  const disputes = visibleOrders.filter(o => o.status === 'disputed');
+  return <div className="w-full space-y-6 pb-20" dir="rtl">
+    <header className="rounded-3xl border border-[#bccac0]/25 bg-white p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex items-center gap-4"><div className="h-14 w-14 rounded-2xl bg-[#213145] text-white flex items-center justify-center"><ClipboardCheck className="h-7 w-7" /></div><div><div className="flex items-center gap-2"><h1 className="text-xl font-black text-[#0b1c30]">مشرف الموقع</h1><span className="rounded-full bg-[#dce9ff] px-2.5 py-1 text-[10px] font-bold text-[#213145]">SITE SUPERVISOR</span></div><p className="mt-1 text-xs text-[#565e74]">متابعة جودة التنفيذ، التزام الفنيين، حالات الطلبات، والملاحظات الميدانية.</p></div></div>
+      <div className="flex flex-wrap items-center gap-2">{(['all','الرياض','جدة','مكة المكرمة'] as const).map(c => <button key={c} onClick={() => setCity(c)} className={`rounded-full px-3 py-2 text-xs font-bold ${city === c ? 'bg-[#006948] text-white' : 'bg-[#eff4ff] text-[#565e74]'}`}>{c === 'all' ? 'كل المواقع' : c}</button>)}{onBackToHome && <button onClick={onBackToHome} className="rounded-full bg-[#0b1c30] px-4 py-2 text-xs font-bold text-white">الرئيسية</button>}</div>
+    </header>
+    <section className="grid grid-cols-2 lg:grid-cols-4 gap-4"><Metric icon={<Clock3 />} label="طلبات نشطة" value={active.length} /><Metric icon={<CheckCircle2 />} label="مكتملة" value={completed.length} /><Metric icon={<AlertTriangle />} label="تحتاج مراجعة" value={disputes.length} /><Metric icon={<Users />} label="فنيون متصلون" value={techs.filter(t => t.bleConnected).length} /></section>
+    <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 rounded-3xl border border-[#bccac0]/25 bg-white p-5 shadow-sm"><div className="mb-4 flex items-center justify-between"><h2 className="font-black text-[#0b1c30]">قائمة التنفيذ الميداني</h2><Filter className="h-4 w-4 text-[#565e74]" /></div><div className="space-y-3">{visibleOrders.slice(0, 10).map(o => <div key={o.id} className="rounded-2xl border border-[#bccac0]/20 bg-[#f8f9ff] p-4"><div className="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><div className="text-xs font-black text-[#006948]">{o.orderNo}</div><div className="font-bold text-[#0b1c30]">{o.serviceTitle}</div><div className="mt-1 text-[11px] text-[#565e74] flex items-center gap-2"><MapPin className="h-3.5 w-3.5" />{o.city} • {o.district}</div></div><div className="text-right"><Status status={o.status}/><div className="mt-2 text-[11px] text-[#565e74]">الفني: {o.technicianName || 'لم يُعيّن بعد'}</div></div></div></div>)}</div></div>
+      <div className="rounded-3xl border border-[#bccac0]/25 bg-white p-5 shadow-sm"><h2 className="mb-4 font-black text-[#0b1c30]">جاهزية الفنيين</h2><div className="space-y-3">{techs.slice(0,6).map(t => <div key={t.technicianId} className="flex items-center justify-between rounded-2xl bg-[#eff4ff] p-3"><div><div className="text-xs font-bold">{t.technicianName}</div><div className="text-[10px] text-[#565e74]">{t.vehicleNo} • {t.city}</div></div><span className={`text-[10px] font-bold ${t.bleConnected ? 'text-[#006948]' : 'text-[#825100]'}`}>{t.bleConnected ? 'متصل' : 'غير متصل'}</span></div>)}</div></div>
+    </section>
+    <section className="rounded-3xl border border-[#bccac0]/25 bg-[#0b1c30] p-5 text-white"><div className="flex items-center gap-3"><ShieldCheck className="h-5 w-5 text-[#85f8c4]"/><div><div className="font-black">صلاحية مشرف الموقع</div><div className="mt-1 text-xs text-white/65">المتابعة والاعتماد الميداني بدون التحكم في عمولات المالك أو إعدادات النظام العامة.</div></div></div></section>
+  </div>;
+};
+const Metric = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) => <div className="rounded-3xl border border-[#bccac0]/25 bg-white p-5 shadow-sm"><div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-[#eff4ff] text-[#006948]">{icon}</div><div className="text-2xl font-black text-[#0b1c30]">{value}</div><div className="text-xs text-[#565e74]">{label}</div></div>;
+const Status = ({ status }: { status: string }) => { const labels: Record<string,string> = { bidding:'تسعير', dispatched:'تم التوجيه', in_progress:'قيد التنفيذ', completed:'مكتمل', disputed:'نزاع', cancelled:'ملغي', pending:'جديد', draft:'مسودة' }; return <span className="inline-flex rounded-full bg-[#dce9ff] px-2.5 py-1 text-[10px] font-bold text-[#213145]">{labels[status] || status}</span>; };
