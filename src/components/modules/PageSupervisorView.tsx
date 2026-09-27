@@ -9,13 +9,26 @@ const PAGE_META: Record<SupervisedPage, { title: string; label: string }> = {
   operations: { title: 'مشرف واجهة العمليات', label: 'مشرف العمليات' },
 };
 
+const LANDING_SERVICE_PRICES: Record<string, number> = {
+  'صيانة مكيفات وتبريد': 180, 'تركيب مكيفات جديدة': 220, 'غسيل وتنظيف مكيفات': 120,
+  'صيانة ثلاجات وتبريد': 160, 'سباكة وشبكات مياه': 150, 'كهرباء وأنظمة ذكية': 170,
+  'أقفال أمنية ونجارة': 190, 'عقود صيانة دورية': 650, 'شركات مقاولات وتشطيبات': 1200,
+};
+
+const LANDING_OFFERS = [
+  { id: 'promo-1', title: 'باقة تنظيف وغسيل 3 مكيفات سبليت', price: 235, discount: 'خصم 35%', active: true },
+  { id: 'promo-2', title: 'فحص كشف تسربات المياه بالموجات فوق الصوتية', price: 150, discount: 'خصم 25%', active: true },
+  { id: 'promo-3', title: 'عقد الصيانة الوقائية السنوي للمنازل والفلل', price: 720, discount: 'خصم 40%', active: true },
+];
+
 const defaults = (page: SupervisedPage): PageSupervisorConfig => ({
   page, enabled: true, pageTitle: PAGE_META[page].label, pageSubtitle: 'واجهة قابلة للتحرير بالكامل',
-  heroTitle: PAGE_META[page].title, heroText: 'تحكم في المحتوى والواجهة والجرافيكس من لوحة المشرف الخاصة بهذه الصفحة.',
+  heroTitle: page === 'landing' ? 'المنظومة الأسرع لخدمات الصيانة والتشغيل الميداني بالمملكة' : PAGE_META[page].title,
+  heroText: page === 'landing' ? 'اطلب فني التكييف، السباكة، الكهرباء أو الصيانة الدورية فوراً من منصة مُتقن.' : 'تحكم في المحتوى والواجهة والجرافيكس من لوحة المشرف الخاصة بهذه الصفحة.',
   heroImageUrl: '', primaryColor: '#006948', accentColor: '#85f8c4', showHero: true, showServices: true,
   showPricing: true, showOffers: true, showGraphics: true, showAnnouncements: true, showQuickActions: true,
   visibleButtons: ['طلب خدمة', 'متابعة الطلب', 'تسجيل الدخول'],
-  servicePrices: {}, offers: [], customLabels: {},
+  servicePrices: page === 'landing' ? LANDING_SERVICE_PRICES : {}, offers: page === 'landing' ? LANDING_OFFERS : [], customLabels: {},
 });
 
 interface Props { page: SupervisedPage; customization: SiteCustomization; onUpdateCustomization: (config: Partial<SiteCustomization>) => void; onBackToHome: () => void; }
