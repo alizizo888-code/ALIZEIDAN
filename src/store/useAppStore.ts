@@ -9,6 +9,8 @@ import {
   P2PPartRequest,
   AppModule,
   SiteCustomization,
+  FleetAlert,
+  GeofenceZone,
 } from '../types';
 import { INITIAL_CUSTOMIZATION } from '../components/modules/AdminCmsView';
 
@@ -245,6 +247,9 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
       fanMotors: 2,
     },
     bleConnected: true,
+    geofenceStatus: 'inside',
+    mechanicalStatus: 'operational',
+    assignedGeofenceId: 'geo-ryd-north',
   },
   {
     technicianId: 'tech-2',
@@ -255,7 +260,7 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
     heading: 120,
     speed: 0,
     batteryLevel: 85,
-    status: 'in_progress',
+    status: 'sos_stalled',
     city: 'الرياض',
     district: 'حي العقيق',
     activeOrderId: '#OXY-9481',
@@ -267,6 +272,10 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
       fanMotors: 0,
     },
     bleConnected: false,
+    geofenceStatus: 'inside',
+    mechanicalStatus: 'breakdown',
+    activeAlertId: 'alt-102',
+    assignedGeofenceId: 'geo-ryd-center',
   },
   {
     technicianId: 'tech-3',
@@ -288,6 +297,9 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
       fanMotors: 1,
     },
     bleConnected: true,
+    geofenceStatus: 'inside',
+    mechanicalStatus: 'operational',
+    assignedGeofenceId: 'geo-ryd-north',
   },
   {
     technicianId: 'tech-4',
@@ -300,7 +312,7 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
     batteryLevel: 65,
     status: 'in_transit',
     city: 'الرياض',
-    district: 'حي الصحافة',
+    district: 'حي الصحافة (خارج النطاق)',
     inventory: {
       freonR410A_cylinders: 1,
       freonR22_cylinders: 2,
@@ -309,6 +321,10 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
       fanMotors: 2,
     },
     bleConnected: true,
+    geofenceStatus: 'breached',
+    mechanicalStatus: 'operational',
+    activeAlertId: 'alt-101',
+    assignedGeofenceId: 'geo-ryd-center',
   },
   {
     technicianId: 'tech-5',
@@ -330,6 +346,9 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
       fanMotors: 1,
     },
     bleConnected: false,
+    geofenceStatus: 'inside',
+    mechanicalStatus: 'operational',
+    assignedGeofenceId: 'geo-jed-west',
   },
   {
     technicianId: 'tech-6',
@@ -339,7 +358,7 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
     lng: 39.8262,
     heading: 0,
     speed: 20,
-    batteryLevel: 88,
+    batteryLevel: 14,
     status: 'in_progress',
     city: 'مكة المكرمة',
     district: 'حي العزيزية',
@@ -352,6 +371,119 @@ export const INITIAL_TECHS: TechnicianTelemetry[] = [
       fanMotors: 3,
     },
     bleConnected: true,
+    geofenceStatus: 'inside',
+    mechanicalStatus: 'warning',
+    activeAlertId: 'alt-103',
+    assignedGeofenceId: 'geo-mkk-center',
+  },
+];
+
+export const INITIAL_GEOFENCES: GeofenceZone[] = [
+  {
+    id: 'geo-ryd-north',
+    name: 'نطاق شمال الرياض (الملقا - النرجس - الياسمين)',
+    city: 'الرياض',
+    centerLat: 24.7891,
+    centerLng: 46.6542,
+    radiusMeters: 5500,
+    color: '#006948',
+    assignedVehicleIds: ['tech-1', 'tech-3'],
+  },
+  {
+    id: 'geo-ryd-center',
+    name: 'نطاق وسط وشمال الرياض (الصحافة - العقيق)',
+    city: 'الرياض',
+    centerLat: 24.7612,
+    centerLng: 46.6214,
+    radiusMeters: 4500,
+    color: '#1d4ed8',
+    assignedVehicleIds: ['tech-2', 'tech-4'],
+  },
+  {
+    id: 'geo-jed-west',
+    name: 'نطاق ساحل جدة الغربي (الروضة والزهراء)',
+    city: 'جدة',
+    centerLat: 21.5433,
+    centerLng: 39.1728,
+    radiusMeters: 6000,
+    color: '#0284c7',
+    assignedVehicleIds: ['tech-5'],
+  },
+  {
+    id: 'geo-mkk-center',
+    name: 'نطاق العاصمة المقدسة (العزيزية والنسيم)',
+    city: 'مكة المكرمة',
+    centerLat: 21.4225,
+    centerLng: 39.8262,
+    radiusMeters: 5000,
+    color: '#006948',
+    assignedVehicleIds: ['tech-6'],
+  },
+];
+
+export const INITIAL_FLEET_ALERTS: FleetAlert[] = [
+  {
+    id: 'alt-101',
+    technicianId: 'tech-4',
+    technicianName: 'عصام حسن',
+    vehicleNo: 'فان أكسجين #07',
+    type: 'geofence_breach',
+    severity: 'warning',
+    status: 'active',
+    title: 'تنبيه خروج عن النطاق الجغرافي المحدد',
+    message: 'تجاوز حدود نطاق قطاع الرياض المخصص (حي الصحافة) بمقدار 2.6 كم باتجاه مخرج صلبوخ دون أمر تشغيل رسمي.',
+    district: 'خارج النطاق (طريق صلبوخ)',
+    city: 'الرياض',
+    lat: 24.81,
+    lng: 46.685,
+    timestamp: 'منذ 3 دقائق',
+    breachDistanceKm: 2.6,
+    geofenceRadiusMeters: 4500,
+    geofenceCenter: { lat: 24.7612, lng: 46.6214 },
+  },
+  {
+    id: 'alt-102',
+    technicianId: 'tech-2',
+    technicianName: 'أحمد ناصر (سباكة)',
+    vehicleNo: 'فان أكسجين #02',
+    type: 'vehicle_breakdown',
+    severity: 'critical',
+    status: 'active',
+    title: 'عطل ميكانيكي حرج وتوقف للمركبة',
+    message: 'ارتفاع مفاجئ في حرارة محرك الفان (118°C) وتوقف طلمبة التبريد على طريق الملك فهد مع وجود شحنة قطع.',
+    district: 'حي العقيق - طريق الملك فهد',
+    city: 'الرياض',
+    lat: 24.7612,
+    lng: 46.6214,
+    timestamp: 'منذ 7 دقائق',
+    breakdownDetails: {
+      cause: 'ارتفاع حرارة الردياتير وتوقف مضخة مياه التبريد',
+      engineTemp: 118,
+      tirePressure: '32 PSI (طبيعي)',
+      batteryLevel: 85,
+      recommendedAction: 'توجيه فان مساندة لسحب المركبة ونقل فني السباكة لإكمال الطلب #OXY-9481',
+    },
+  },
+  {
+    id: 'alt-103',
+    technicianId: 'tech-6',
+    technicianName: 'رامي منصور',
+    vehicleNo: 'فان أكسجين #22',
+    type: 'battery_critical',
+    severity: 'info',
+    status: 'in_progress',
+    title: 'انخفاض شحن بطارية مانيفولد القياس الميداني',
+    message: 'مستوى بطارية المانيفولد الذكي BLE انخفض إلى 14% أثناء تنفيذ أعمال فحص لوحات الكهرباء.',
+    district: 'حي العزيزية',
+    city: 'مكة المكرمة',
+    lat: 21.4225,
+    lng: 39.8262,
+    timestamp: 'منذ 22 دقيقة',
+    breakdownDetails: {
+      cause: 'استهلاك مستمر لمجسات البلوتوث اللاسلكية',
+      batteryLevel: 14,
+      recommendedAction: 'الشحن السريع عبر ولاعة الفان قبل التوجه للطلب القادم',
+    },
   },
 ];
 
@@ -416,6 +548,13 @@ export function useAppStore() {
   });
 
   const [techs, setTechs] = useState<TechnicianTelemetry[]>(INITIAL_TECHS);
+  const [geofences, setGeofences] = useState<GeofenceZone[]>(INITIAL_GEOFENCES);
+  const [fleetAlerts, setFleetAlerts] = useState<FleetAlert[]>(() => {
+    const saved = localStorage.getItem('motqan_fleet_alerts');
+    return saved ? JSON.parse(saved) : INITIAL_FLEET_ALERTS;
+  });
+  const [focusedAlertId, setFocusedAlertId] = useState<string | null>(null);
+  const [isAlertSoundEnabled, setIsAlertSoundEnabled] = useState<boolean>(true);
   const [timeLocks, setTimeLocks] = useState<TimeLockTransaction[]>(INITIAL_TIMELOCKS);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(INITIAL_CHAT);
   
@@ -591,6 +730,179 @@ export function useAppStore() {
     return newOrder;
   };
 
+  const playAlertChime = () => {
+    if (!isAlertSoundEnabled || typeof window === 'undefined') return;
+    try {
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+    } catch {
+      // Audio context may be restricted until user gesture
+    }
+  };
+
+  const resolveAlert = (alertId: string, resolutionNote?: string) => {
+    setFleetAlerts((prev) =>
+      prev.map((a) => {
+        if (a.id === alertId) {
+          return {
+            ...a,
+            status: 'resolved',
+            resolutionNote: resolutionNote || 'تمت معالجة التنبيه بنجاح بواسطة مسؤول العمليات المركزية',
+          };
+        }
+        return a;
+      })
+    );
+
+    // Update tech status back to operational if no other active alerts
+    const targetAlert = fleetAlerts.find((a) => a.id === alertId);
+    if (targetAlert) {
+      setTechs((prev) =>
+        prev.map((t) => {
+          if (t.technicianId === targetAlert.technicianId) {
+            return {
+              ...t,
+              status: t.status === 'sos_stalled' ? 'available' : t.status,
+              mechanicalStatus: 'operational',
+              geofenceStatus: 'inside',
+              activeAlertId: undefined,
+            };
+          }
+          return t;
+        })
+      );
+    }
+  };
+
+  const recalibrateGeofence = (alertId: string) => {
+    const alert = fleetAlerts.find((a) => a.id === alertId);
+    if (!alert) return;
+
+    // Expand or update geofence to encompass current vehicle position
+    setGeofences((prev) =>
+      prev.map((g) => {
+        if (g.assignedVehicleIds.includes(alert.technicianId)) {
+          return {
+            ...g,
+            centerLat: alert.lat,
+            centerLng: alert.lng,
+            radiusMeters: Math.max(g.radiusMeters, ((alert.breachDistanceKm || 2) + 3) * 1000),
+          };
+        }
+        return g;
+      })
+    );
+
+    resolveAlert(alertId, 'تمت إعادة معايرة وتوسيع النطاق الجغرافي ليشمل موقع المركبة الحالي');
+  };
+
+  const dispatchBackupVan = (alertId: string, backupTechName: string) => {
+    const alert = fleetAlerts.find((a) => a.id === alertId);
+    if (!alert) return;
+
+    resolveAlert(alertId, `تم توجيه فان الإسناد السريع (${backupTechName}) إلى موقع الحادث لدعم الفني ${alert.technicianName}`);
+  };
+
+  const triggerSimulatedBreakdown = (targetTechId?: string) => {
+    const targetTech = techs.find((t) => (targetTechId ? t.technicianId === targetTechId : t.status !== 'sos_stalled')) || techs[1];
+    const newAlertId = `alt-${Date.now().toString().slice(-4)}`;
+    
+    const newAlert: FleetAlert = {
+      id: newAlertId,
+      technicianId: targetTech.technicianId,
+      technicianName: targetTech.technicianName,
+      vehicleNo: targetTech.vehicleNo,
+      type: 'vehicle_breakdown',
+      severity: 'critical',
+      status: 'active',
+      title: 'عطل ميكانيكي مفاجئ بالمركبة',
+      message: `توقف مفاجئ في دينامو الكهرباء وتصاعد حرارة المحرك للفان ${targetTech.vehicleNo} في ${targetTech.district}.`,
+      district: targetTech.district,
+      city: targetTech.city,
+      lat: targetTech.lat,
+      lng: targetTech.lng,
+      timestamp: 'الآن',
+      breakdownDetails: {
+        cause: 'تلف سير الدينامو وارتفاع حرارة المحرك إلى 116°C',
+        engineTemp: 116,
+        tirePressure: '31 PSI (معاير)',
+        batteryLevel: targetTech.batteryLevel,
+        recommendedAction: 'إرسال سطحة أكسجين وسحب السيارة إلى الورشة المركزية',
+      },
+    };
+
+    setTechs((prev) =>
+      prev.map((t) =>
+        t.technicianId === targetTech.technicianId
+          ? { ...t, status: 'sos_stalled', mechanicalStatus: 'breakdown', activeAlertId: newAlertId, speed: 0 }
+          : t
+      )
+    );
+
+    setFleetAlerts((prev) => [newAlert, ...prev]);
+    setFocusedAlertId(newAlertId);
+    playAlertChime();
+    return newAlert;
+  };
+
+  const triggerSimulatedGeofenceBreach = (targetTechId?: string) => {
+    const targetTech = techs.find((t) => (targetTechId ? t.technicianId === targetTechId : t.geofenceStatus !== 'breached')) || techs[2];
+    const newAlertId = `alt-${Date.now().toString().slice(-4)}`;
+    const breachedLat = targetTech.lat + 0.035;
+    const breachedLng = targetTech.lng + 0.028;
+
+    const newAlert: FleetAlert = {
+      id: newAlertId,
+      technicianId: targetTech.technicianId,
+      technicianName: targetTech.technicianName,
+      vehicleNo: targetTech.vehicleNo,
+      type: 'geofence_breach',
+      severity: 'warning',
+      status: 'active',
+      title: 'خروج فوري عن النطاق الجغرافي المصرح',
+      message: `تم رصد خروج الفان ${targetTech.vehicleNo} عن الحدود الجغرافية للقطاع المخصص بمقدار 3.4 كم باتجاه الدائري الشمالي.`,
+      district: `خارج النطاق (${targetTech.district})`,
+      city: targetTech.city,
+      lat: parseFloat(breachedLat.toFixed(5)),
+      lng: parseFloat(breachedLng.toFixed(5)),
+      timestamp: 'الآن',
+      breachDistanceKm: 3.4,
+      geofenceRadiusMeters: 5000,
+      geofenceCenter: { lat: targetTech.lat, lng: targetTech.lng },
+    };
+
+    setTechs((prev) =>
+      prev.map((t) =>
+        t.technicianId === targetTech.technicianId
+          ? {
+              ...t,
+              geofenceStatus: 'breached',
+              activeAlertId: newAlertId,
+              lat: parseFloat(breachedLat.toFixed(5)),
+              lng: parseFloat(breachedLng.toFixed(5)),
+            }
+          : t
+      )
+    );
+
+    setFleetAlerts((prev) => [newAlert, ...prev]);
+    setFocusedAlertId(newAlertId);
+    playAlertChime();
+    return newAlert;
+  };
+
   return {
     switches,
     toggleSwitch,
@@ -598,6 +910,18 @@ export function useAppStore() {
     adjustCommission,
     orders,
     techs,
+    geofences,
+    fleetAlerts,
+    focusedAlertId,
+    setFocusedAlertId,
+    isAlertSoundEnabled,
+    setIsAlertSoundEnabled,
+    resolveAlert,
+    recalibrateGeofence,
+    dispatchBackupVan,
+    triggerSimulatedBreakdown,
+    triggerSimulatedGeofenceBreach,
+    playAlertChime,
     timeLocks,
     chatMessages,
     addChatMessage,

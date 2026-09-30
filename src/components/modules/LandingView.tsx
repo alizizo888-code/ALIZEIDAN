@@ -24,6 +24,10 @@ import {
   TrendingUp,
   Tag,
   ShoppingBag,
+  Search,
+  Gift,
+  Percent,
+  Phone,
 } from 'lucide-react';
 import { PlatformSwitches, RegistrationType } from '../../types';
 import { BottomAppNavBar, AppNavTab } from '../BottomAppNavBar';
@@ -53,12 +57,15 @@ export const LandingView: React.FC<LandingViewProps> = ({
   // Bottom Mobile-App Navigation Tab
   const [activeAppTab, setActiveAppTab] = useState<AppNavTab>('home');
 
+  // In-tab filters
+  const [serviceSearch, setServiceSearch] = useState('');
+  const [selectedServiceCat, setSelectedServiceCat] = useState<'all' | 'hvac' | 'plumbing' | 'electrical' | 'appliances' | 'carpentry'>('all');
+  const [offerCategory, setOfferCategory] = useState<'all' | 'hvac' | 'plumbing' | 'contracts'>('all');
+
   const handleAppTabChange = (tab: AppNavTab) => {
     setActiveAppTab(tab);
     if (tab === 'orders') {
       onNavigateToCustomer();
-    } else if (tab === 'account') {
-      onNavigateToRegister(undefined, 'customer');
     }
   };
 
@@ -184,40 +191,43 @@ export const LandingView: React.FC<LandingViewProps> = ({
   return (
     <div className="flex flex-col w-full pb-20 font-sans" dir="rtl">
       
-      {/* DUAL-PERSONA SWITCHER BAR (مخاطبة الشخصيتين: العملاء vs مزودي الخدمة) */}
-      <div className="mb-6 bg-[#ffffff] p-2.5 sm:p-3 rounded-2xl border border-[#bccac0]/30 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-[#565e74]">وجهتك المفضلة في المنصة:</span>
-        </div>
+      {/* 1. HOME APP TAB */}
+      {activeAppTab === 'home' && (
+        <>
+          {/* DUAL-PERSONA SWITCHER BAR (مخاطبة الشخصيتين: العملاء vs مزودي الخدمة) */}
+          <div className="mb-6 bg-[#ffffff] p-2.5 sm:p-3 rounded-2xl border border-[#bccac0]/30 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-[#565e74]">وجهتك المفضلة في المنصة:</span>
+            </div>
 
-        <div className="flex p-1 rounded-xl bg-[#eff4ff] border border-[#bccac0]/25 w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={() => setActivePersona('customers')}
-            className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-              activePersona === 'customers'
-                ? 'bg-[#006948] text-white shadow-sm'
-                : 'text-[#565e74] hover:text-[#0b1c30]'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>للعملاء وأصحاب العقارات (طلب صيانة)</span>
-          </button>
+            <div className="flex p-1 rounded-xl bg-[#eff4ff] border border-[#bccac0]/25 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setActivePersona('customers')}
+                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  activePersona === 'customers'
+                    ? 'bg-[#006948] text-white shadow-sm'
+                    : 'text-[#565e74] hover:text-[#0b1c30]'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                <span>للعملاء وأصحاب العقارات (طلب صيانة)</span>
+              </button>
 
-          <button
-            type="button"
-            onClick={() => setActivePersona('providers')}
-            className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-              activePersona === 'providers'
-                ? 'bg-[#006948] text-white shadow-sm'
-                : 'text-[#565e74] hover:text-[#0b1c30]'
-            }`}
-          >
-            <Briefcase className="w-4 h-4" />
-            <span>لمزودي الخدمة والشركات (انضم كشريك)</span>
-          </button>
-        </div>
-      </div>
+              <button
+                type="button"
+                onClick={() => setActivePersona('providers')}
+                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  activePersona === 'providers'
+                    ? 'bg-[#006948] text-white shadow-sm'
+                    : 'text-[#565e74] hover:text-[#0b1c30]'
+                }`}
+              >
+                <Briefcase className="w-4 h-4" />
+                <span>لمزودي الخدمة والشركات (انضم كشريك)</span>
+              </button>
+            </div>
+          </div>
 
       {/* HERO SECTION DYNAMICALLY TAILORED FOR ACTIVE PERSONA */}
       <section className="relative overflow-hidden bg-[#eff4ff] rounded-3xl p-6 sm:p-10 lg:p-12 mb-10 border border-[#bccac0]/25 shadow-sm">
@@ -362,9 +372,8 @@ export const LandingView: React.FC<LandingViewProps> = ({
         </div>
       </section>
 
-      {/* OFFERS & PROMOTIONS SECTION (يعرض عند اختيار تبويب العروض أو كقسم مميز) */}
-      {(activeAppTab === 'offers' || activeAppTab === 'home') && (
-        <section id="offers-section" className="mb-14 scroll-mt-24">
+      {/* OFFERS & PROMOTIONS SECTION */}
+      <section id="offers-section" className="mb-14 scroll-mt-24">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-3">
             <div>
               <div className="flex items-center gap-2 text-[#825100] mb-1">
@@ -421,7 +430,6 @@ export const LandingView: React.FC<LandingViewProps> = ({
             ))}
           </div>
         </section>
-      )}
 
       {/* SERVICES GRID WITH 1-CLICK BOOKING & REGISTRATION */}
       <section className="mb-14">
@@ -673,6 +681,354 @@ export const LandingView: React.FC<LandingViewProps> = ({
           </div>
         </div>
       </section>
+      </>
+    )}
+
+      {/* 2. OFFERS & PROMOTIONS IN-APP TAB */}
+      {activeAppTab === 'offers' && (
+        <div className="space-y-6 animate-fade-in">
+          {/* Header */}
+          <div className="bg-[#ffffff] rounded-3xl p-6 shadow-sm border border-[#bccac0]/25 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#006948] text-white flex items-center justify-center shadow-md">
+                <Tag className="w-6 h-6" />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-[#0b1c30]">
+                  العروض والباقات الترويجية الحصرية (Exclusive Offers)
+                </h1>
+                <p className="text-xs text-[#565e74] mt-0.5">
+                  باقات مخفضة بضمان ذهبي 180 يوماً معتمدة بفواتير هيئة الزكاة والضريبة (ZATCA)
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="px-3.5 py-1.5 rounded-full bg-[#85f8c4] text-[#002114] text-xs font-bold">
+                خصومات تصل إلى 40%
+              </span>
+            </div>
+          </div>
+
+          {/* Offers Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            {[
+              { id: 'all', label: 'كافة العروض والباقات' },
+              { id: 'hvac', label: 'عروض التكييف والتبريد' },
+              { id: 'plumbing', label: 'عروض كشف التسربات' },
+              { id: 'contracts', label: 'عقود الصيانة السنوية' },
+            ].map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setOfferCategory(cat.id as any)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  offerCategory === cat.id
+                    ? 'bg-[#006948] text-white shadow-sm'
+                    : 'bg-[#ffffff] text-[#565e74] hover:bg-[#eff4ff] border border-[#bccac0]/25'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Offers Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {promotionalOffers
+              .filter((offer) => {
+                if (offerCategory === 'hvac') return offer.service.includes('مكيفات');
+                if (offerCategory === 'plumbing') return offer.service.includes('سباكة');
+                if (offerCategory === 'contracts') return offer.service.includes('عقود');
+                return true;
+              })
+              .map((offer) => (
+                <div
+                  key={offer.id}
+                  className="bg-[#ffffff] rounded-3xl p-6 border border-[#bccac0]/25 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="px-3 py-1 rounded-full bg-[#006948]/10 text-[#006948] font-bold text-xs">
+                        {offer.badge}
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-md bg-[#825100] text-white text-[11px] font-bold">
+                        {offer.discount}
+                      </span>
+                    </div>
+
+                    <h3 className="text-base font-bold text-[#0b1c30] mb-2 leading-snug">
+                      {offer.title}
+                    </h3>
+                    <p className="text-xs text-[#565e74] leading-relaxed mb-4">
+                      {offer.desc}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-[#bccac0]/20 flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] text-[#565e74] line-through font-mono">
+                        {offer.originalPrice}
+                      </div>
+                      <div className="text-lg font-black text-[#006948] font-mono">
+                        {offer.offerPrice}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => onSelectService(offer.service, 'guest')}
+                      className="px-5 py-2.5 rounded-xl bg-[#006948] hover:bg-[#00855d] text-white text-xs font-bold shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>احجز العرض الآن</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          {/* Promotional Coupon Simulator Box */}
+          <div className="bg-[#eff4ff] p-5 rounded-3xl border border-[#bccac0]/25 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Gift className="w-8 h-8 text-[#006948]" />
+              <div>
+                <h4 className="font-bold text-sm text-[#0b1c30]">
+                  هل تملك كود خصم خاص أو نقاط ولاء؟
+                </h4>
+                <p className="text-xs text-[#565e74]">
+                  استخدم كود الترحيب <strong className="font-mono text-[#006948]">OXYGEN2025</strong> لخصم إضافي 10% عند إتمام الطلب
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => onNavigateToRegister('باقة تنظيف وغسيل 3 مكيفات سبليت', 'customer')}
+              className="px-5 py-2.5 rounded-xl bg-[#006948] text-white text-xs font-bold hover:bg-[#00855d] cursor-pointer"
+            >
+              تفعيل الكوبون وحجز موعد
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 3. SERVICES DIRECTORY IN-APP TAB */}
+      {activeAppTab === 'services' && (
+        <div className="space-y-6 animate-fade-in">
+          {/* Header */}
+          <div className="bg-[#ffffff] rounded-3xl p-6 shadow-sm border border-[#bccac0]/25 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#006948] text-white flex items-center justify-center shadow-md">
+                <Wrench className="w-6 h-6" />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-[#0b1c30]">
+                  دليل الخدمات التخصصية المعتمدة (Services Catalog)
+                </h1>
+                <p className="text-xs text-[#565e74] mt-0.5">
+                  جميع الخدمات تخضع للضمان الذهبي وفحص أجهزة الضغط والتبريد اللاسلكية BLE
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Search */}
+            <div className="relative w-full md:w-72">
+              <Search className="w-4 h-4 text-[#565e74] absolute right-3 top-3.5" />
+              <input
+                type="text"
+                placeholder="ابحث عن خدمة صيانة..."
+                value={serviceSearch}
+                onChange={(e) => setServiceSearch(e.target.value)}
+                className="w-full bg-[#eff4ff] pl-4 pr-9 py-2.5 rounded-xl text-xs outline-none border border-transparent focus:border-[#006948]"
+              />
+            </div>
+          </div>
+
+          {/* Services Category Filter */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            {[
+              { id: 'all', label: 'كافة الخدمات' },
+              { id: 'hvac', label: 'تكييف وتبريد' },
+              { id: 'plumbing', label: 'سباكة وشبكات مياه' },
+              { id: 'electrical', label: 'كهرباء وأنظمة ذكية' },
+              { id: 'appliances', label: 'أجهزة وثلاجات' },
+              { id: 'carpentry', label: 'أقفال أمنية ونجارة' },
+            ].map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedServiceCat(cat.id as any)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  selectedServiceCat === cat.id
+                    ? 'bg-[#006948] text-white shadow-sm'
+                    : 'bg-[#ffffff] text-[#565e74] hover:bg-[#eff4ff] border border-[#bccac0]/25'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Services Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {services
+              .filter((svc) => {
+                if (selectedServiceCat === 'hvac') return svc.id.startsWith('hvac');
+                if (selectedServiceCat === 'plumbing') return svc.id === 'plumbing';
+                if (selectedServiceCat === 'electrical') return svc.id === 'electrical';
+                if (selectedServiceCat === 'appliances') return svc.id.startsWith('appliances');
+                if (selectedServiceCat === 'carpentry') return svc.id.startsWith('carpentry');
+                return true;
+              })
+              .filter((svc) => {
+                if (!serviceSearch) return true;
+                return (
+                  svc.title.includes(serviceSearch) ||
+                  svc.subtitle.includes(serviceSearch)
+                );
+              })
+              .map((svc) => (
+                <div
+                  key={svc.id}
+                  className="bg-[#ffffff] p-5 rounded-3xl border border-[#bccac0]/25 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className={`p-3 rounded-2xl ${svc.color} flex items-center justify-center shadow-xs`}>
+                        <span className="material-symbols-outlined text-xl">{svc.icon}</span>
+                      </div>
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#eff4ff] text-[#006948] font-bold text-[11px] border border-[#bccac0]/20">
+                        {svc.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="font-bold text-sm text-[#0b1c30] mb-1">{svc.title}</h3>
+                    <p className="text-xs text-[#565e74] mb-4">{svc.subtitle}</p>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#bccac0]/20 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] text-[#565e74] block">تبدأ من</span>
+                      <span className="text-base font-black text-[#006948] font-mono">{svc.price}</span>
+                    </div>
+
+                    <button
+                      onClick={() => onSelectService(svc.title, 'guest')}
+                      className="px-4 py-2 rounded-xl bg-[#006948] hover:bg-[#00855d] text-white text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1"
+                    >
+                      <span>طلب فوري</span>
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. ACCOUNT & PROFILE IN-APP TAB */}
+      {activeAppTab === 'account' && (
+        <div className="space-y-6 animate-fade-in max-w-3xl mx-auto">
+          {/* Profile Card */}
+          <div className="bg-[#ffffff] rounded-3xl p-6 sm:p-8 shadow-sm border border-[#bccac0]/25 text-center">
+            <div className="w-20 h-20 rounded-full bg-[#006948]/10 text-[#006948] flex items-center justify-center mx-auto mb-4 font-bold text-2xl border-2 border-[#006948]/30">
+              <UserCheck className="w-10 h-10" />
+            </div>
+            <h2 className="text-xl font-bold text-[#0b1c30] mb-1">
+              مرحباً بك في منصة مُتقن للصيانة
+            </h2>
+            <p className="text-xs text-[#565e74] mb-4">
+              مبادرة مؤسسة أكسجين للصيانة والمقاولات العامة • إشراف م. علي طلعت زيدان
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+              <span className="px-3 py-1 rounded-full bg-[#eff4ff] text-[#006948] text-xs font-bold border border-[#bccac0]/25">
+                مستفيد ضيف نشط
+              </span>
+              <span className="px-3 py-1 rounded-full bg-[#85f8c4] text-[#002114] text-xs font-bold">
+                150 نقطة ولاء ترحيبية
+              </span>
+            </div>
+
+            {/* Quick Portal Switcher Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
+              <button
+                onClick={() => onNavigateToRegister(undefined, 'customer')}
+                className="p-4 rounded-2xl bg-[#eff4ff] hover:bg-[#e5eeff] border border-[#bccac0]/25 text-right transition-all cursor-pointer flex items-center justify-between"
+              >
+                <div>
+                  <h4 className="font-bold text-sm text-[#0b1c30] mb-0.5">
+                    تسجيل الدخول / فتح حساب عميل
+                  </h4>
+                  <p className="text-[11px] text-[#565e74]">
+                    ربط بالعنوان الوطني الموحد وتتبع الضمان
+                  </p>
+                </div>
+                <ArrowLeft className="w-4 h-4 text-[#006948]" />
+              </button>
+
+              <button
+                onClick={() => onNavigateToRegister(undefined, 'technician')}
+                className="p-4 rounded-2xl bg-[#eff4ff] hover:bg-[#e5eeff] border border-[#bccac0]/25 text-right transition-all cursor-pointer flex items-center justify-between"
+              >
+                <div>
+                  <h4 className="font-bold text-sm text-[#0b1c30] mb-0.5">
+                    الانضمام كفني أو مقاول
+                  </h4>
+                  <p className="text-[11px] text-[#565e74]">
+                    استقبال أوردرات الصيانة وأرباح فورية
+                  </p>
+                </div>
+                <ArrowLeft className="w-4 h-4 text-[#006948]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Account Quick Features */}
+          <div className="bg-[#ffffff] rounded-3xl p-6 shadow-sm border border-[#bccac0]/25 space-y-4">
+            <h3 className="font-bold text-sm text-[#0b1c30]">
+              الميزات والضمانات المعتمدة لحسابك:
+            </h3>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-[#eff4ff] rounded-2xl flex items-center justify-between border border-[#bccac0]/20">
+                <div className="flex items-center gap-3">
+                  <Shield className="w-5 h-5 text-[#006948]" />
+                  <div>
+                    <span className="font-bold text-[#0b1c30] block">الضمان الذهبي 180 يوماً</span>
+                    <span className="text-[#565e74]">إعادة صيانة مجانية أو استرداد كامل للمبلغ</span>
+                  </div>
+                </div>
+                <span className="text-[#006948] font-bold">نشط وتلقائي</span>
+              </div>
+
+              <div className="p-3 bg-[#eff4ff] rounded-2xl flex items-center justify-between border border-[#bccac0]/20">
+                <div className="flex items-center gap-3">
+                  <FileCheck className="w-5 h-5 text-[#006948]" />
+                  <div>
+                    <span className="font-bold text-[#0b1c30] block">الفاتورة الإلكترونية المعتمدة ZATCA</span>
+                    <span className="text-[#565e74]">رمز QR مشفر ومطابق لهيئة الزكاة والضريبة</span>
+                  </div>
+                </div>
+                <span className="text-[#006948] font-bold">فوري مع كل طلب</span>
+              </div>
+
+              <div className="p-3 bg-[#eff4ff] rounded-2xl flex items-center justify-between border border-[#bccac0]/20">
+                <div className="flex items-center gap-3">
+                  <PhoneCall className="w-5 h-5 text-[#006948]" />
+                  <div>
+                    <span className="font-bold text-[#0b1c30] block">خط الطوارئ والاستجابة السريعة</span>
+                    <span className="text-[#565e74]">إشراف م. علي طلعت زيدان: 0549423050</span>
+                  </div>
+                </div>
+                <a
+                  href="tel:0549423050"
+                  className="px-3 py-1 rounded-full bg-[#006948] text-white text-[11px] font-bold hover:bg-[#00855d]"
+                >
+                  اتصال مباشر
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Bottom App Navigation Bar (الرئيسية، العروض، الخدمات، طلباتي، الحساب) */}
       <BottomAppNavBar
